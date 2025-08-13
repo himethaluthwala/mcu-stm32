@@ -1,0 +1,21 @@
+/*
+ * 001LEDToggle.c
+ *
+ *  Created on: Aug 10, 2025
+ *      Author: himethaluthwala
+ */
+
+
+#include "stm32f407xx.h"
+
+int main(void)
+{
+	GPIO_Handle_t GPIO_LED;
+
+	GPIO_LED = GPIOD;
+
+
+
+
+	return 0;
+}
