@@ -94,7 +94,7 @@ typedef struct
 	volatile uint32_t CR;						/* RCC clock control register							Offset: 0x00 */
 	volatile uint32_t PLLCFGR;					/* RCC PLL configuration register						Offset: 0x04 */
 	volatile uint32_t CFGR;						/* RCC clock configuration register						Offset: 0x08 */
-	volatile uint32_t CIR;						/* RCC clock interupt register							Offset: 0x0C */
+	volatile uint32_t CIR;						/* RCC clock interrupt register							Offset: 0x0C */
 	volatile uint32_t AHB1RSTR;					/* RCC AHB1 peripheral reset register					Offset: 0x10 */
 	volatile uint32_t AHB2RSTR;					/* RCC AHB2 peripheral reset register					Offset: 0x14 */
 	volatile uint32_t AHB3RSTR;					/* RCC AHB3 peripheral reset register					Offset: 0x18 */
@@ -123,12 +123,36 @@ typedef struct
 	volatile uint32_t CSR;						/* RCC clock control and status register				Offset: 0x74 */
 	volatile uint32_t RESERVED9;				/*														Offset: 0x78 */
 	volatile uint32_t RESERVED10;				/*														Offset: 0x7C */
-	volatile uint32_t SSCGR;					/* RCC spread spectrum clock gerneration register		Offset: 0x80 */
+	volatile uint32_t SSCGR;					/* RCC spread spectrum clock generation register		Offset: 0x80 */
 	volatile uint32_t PLLI2SCFGR;				/* RCC PLLI2S configuration register					Offset: 0x84 */
 	volatile uint32_t PLLSAICFGR;				/* RCC PLL configuration register						Offset: 0x88 */
 	volatile uint32_t DCKCFGR;					/* RCC dedicated clock configuration register			Offset: 0x8C */
-} RCC_RegDef_t;
+}RCC_RegDef_t;
 
+
+/* External Interrupt (EXTI) */
+
+typedef struct
+{
+	volatile uint32_t IMR;						/* 														Offset: 0x00 */
+	volatile uint32_t EMR;						/* 														Offset: 0x04 */
+	volatile uint32_t RTSR;						/*														Offset: 0x08 */
+	volatile uint32_t FTSR;						/* 														Offset: 0x0C */
+	volatile uint32_t SWIER;					/* 														Offset: 0x10 */
+	volatile uint32_t PR;						/* 														Offset: 0x14 */
+}EXTI_RegDef_t;
+
+
+/* System Configuration (SYSCFG) */
+
+typedef struct
+{
+	volatile uint32_t MEMRMP;					/* SYSCFG memory remap register							Offset: 0x00 */
+	volatile uint32_t PMC;						/* Peripheral mode configuration register				Offset: 0x04 */
+	volatile uint32_t EXTICR[4];					/* EXTI configuration register 1-4						Offset: 0x08-0x14 */
+	volatile uint32_t RESERVED[2];				/* 														Offset: 0x18-0x1C */
+	volatile uint32_t CMPCR;					/* Compensation cell control register					Offset: 0x20 */
+}SYSCFG_RegDef_t;
 
 
 /********************************************************************************/
@@ -154,6 +178,15 @@ typedef struct
 /* Reset and Clock Control (RCC) */
 
 #define RCC					((RCC_RegDef_t*) RCC_BASEADDR)
+
+
+/* External Interrupt (EXTI) */
+
+#define EXTI				((EXTI_RegDef_t*) EXTI_BASEADDR)
+
+/* System Configuration (SYSCFG) */
+
+#define SYSCFG				((SYSCFG_RegDef_t*) SYSCFG_BASEADDR)
 
 
 /********************************************************************************/
@@ -264,16 +297,32 @@ typedef struct
 
 /********************************************************************************/
 
+#define GPIOA_REG_RESET()			do{ (RCC->AHB1RSTR |= (1 << 0)); RCC->AHB1RSTR &= ~(1 << 0);} while(0)
+#define GPIOB_REG_RESET()			do{ (RCC->AHB1RSTR |= (1 << 1)); RCC->AHB1RSTR &= ~(1 << 1);} while(0)
+#define GPIOC_REG_RESET()			do{ (RCC->AHB1RSTR |= (1 << 2)); RCC->AHB1RSTR &= ~(1 << 2);} while(0)
+#define GPIOD_REG_RESET()			do{ (RCC->AHB1RSTR |= (1 << 3)); RCC->AHB1RSTR &= ~(1 << 3);} while(0)
+#define GPIOE_REG_RESET()			do{ (RCC->AHB1RSTR |= (1 << 4)); RCC->AHB1RSTR &= ~(1 << 4);} while(0)
+#define GPIOF_REG_RESET()			do{ (RCC->AHB1RSTR |= (1 << 5)); RCC->AHB1RSTR &= ~(1 << 5);} while(0)
+#define GPIOG_REG_RESET()			do{ (RCC->AHB1RSTR |= (1 << 6)); RCC->AHB1RSTR &= ~(1 << 6);} while(0)
+#define GPIOH_REG_RESET()			do{ (RCC->AHB1RSTR |= (1 << 7)); RCC->AHB1RSTR &= ~(1 << 7);} while(0)
+#define GPIOI_REG_RESET()			do{ (RCC->AHB1RSTR |= (1 << 8)); RCC->AHB1RSTR &= ~(1 << 8);} while(0)
 
-#define GPIOA_REG_RESET()	do{ (RCC->AHB1RSTR |= (1 << 0)); RCC->AHB1RSTR &= ~(1 << 0);} while(0)
-#define GPIOB_REG_RESET()	do{ (RCC->AHB1RSTR |= (1 << 1)); RCC->AHB1RSTR &= ~(1 << 1);} while(0)
-#define GPIOC_REG_RESET()	do{ (RCC->AHB1RSTR |= (1 << 2)); RCC->AHB1RSTR &= ~(1 << 2);} while(0)
-#define GPIOD_REG_RESET()	do{ (RCC->AHB1RSTR |= (1 << 3)); RCC->AHB1RSTR &= ~(1 << 3);} while(0)
-#define GPIOE_REG_RESET()	do{ (RCC->AHB1RSTR |= (1 << 4)); RCC->AHB1RSTR &= ~(1 << 4);} while(0)
-#define GPIOF_REG_RESET()	do{ (RCC->AHB1RSTR |= (1 << 5)); RCC->AHB1RSTR &= ~(1 << 5);} while(0)
-#define GPIOG_REG_RESET()	do{ (RCC->AHB1RSTR |= (1 << 6)); RCC->AHB1RSTR &= ~(1 << 6);} while(0)
-#define GPIOH_REG_RESET()	do{ (RCC->AHB1RSTR |= (1 << 7)); RCC->AHB1RSTR &= ~(1 << 7);} while(0)
-#define GPIOI_REG_RESET()	do{ (RCC->AHB1RSTR |= (1 << 8)); RCC->AHB1RSTR &= ~(1 << 8);} while(0)
+
+/********************************************************************************/
+
+/* Macro to get port code from GPIO base address */
+
+/********************************************************************************/
+
+#define GPIO_BASEADDR_TO_CODE(x)	( (x == GPIOA) ? 0 :\
+									(x == GPIOB) ? 1 :\
+									(x == GPIOC) ? 2 :\
+									(x == GPIOD) ? 3 :\
+									(x == GPIOE) ? 4 :\
+									(x == GPIOF) ? 5 :\
+									(x == GPIOG) ? 6 :\
+									(x == GPIOH) ? 7 :\
+									(x == GPIOI) ? 8 :0 )
 
 
 /********************************************************************************/

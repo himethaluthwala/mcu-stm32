@@ -35,6 +35,34 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 	}
 	else		// interrupt mode
 	{
+		if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_IT_FT) {
+			// configure the FTSR
+			EXTI->FTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+			// clear corresponding RTSR bit
+			EXTI->RTSR &= ~(1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+		}
+		else if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_IT_RT) {
+			// configure the RTSR
+			EXTI->RTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+			// clear corresponding FTSR bit
+			EXTI->FTSR &= ~(1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+		}
+		else if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_IT_RFT) {
+			// configure both registers
+			EXTI->FTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+			EXTI->RTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+		}
+
+		// configure GPIO Port selection in SYSCFG_EXTICR
+		uint8_t temp1 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber / 4;		// index for EXTI control register
+		uint8_t temp2 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber % 4;		// offset within register
+		uint8_t portcode = GPIO_BASEADDR_TO_CODE(pGPIOHandle->pGPIOx);		// GPIO port code
+
+		SYSCFG_PCLK_EN();		// enable SYSCFG peripheral clock
+		SYSCFG->EXTICR[temp1] |= (portcode << (temp2 * 4));
+
+		// enable EXTI interrupt delivery using IMR
+		EXTI->IMR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
 
 
 	}
@@ -66,12 +94,12 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 	if (pGPIOHandle->GPIO_PinConfig.GPIO_PinAltFunMode == GPIO_MODE_ALTFN)
 	{
 		// configure the alternate function mode
-		uint8_t temp1, temp2;
+		uint8_t temp3, temp4;
 
-		temp1 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber / 8;		// alternate function low or high register
-		temp2 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber % 8;		// offset in the register
-		pGPIOHandle->pGPIOx->AFR[temp1] &= ~(0xF << (4 * temp2));
-		pGPIOHandle->pGPIOx->AFR[temp1] |= (pGPIOHandle->GPIO_PinConfig.GPIO_PinAltFunMode << (4 * temp2));
+		temp3 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber / 8;		// alternate function low or high register
+		temp4 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber % 8;		// offset in the register
+		pGPIOHandle->pGPIOx->AFR[temp3] &= ~(0xF << (4 * temp4));
+		pGPIOHandle->pGPIOx->AFR[temp3] |= (pGPIOHandle->GPIO_PinConfig.GPIO_PinAltFunMode << (4 * temp4));
 	}
 
 }
