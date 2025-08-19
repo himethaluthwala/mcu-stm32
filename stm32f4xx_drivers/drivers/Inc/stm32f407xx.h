@@ -11,6 +11,41 @@
 #include <stdint.h>
 
 
+/********************************************************************************/
+
+/* PROCESSOR SPECIFIC DETAILS - ARM CORTEX M4 */
+
+/********************************************************************************/
+
+/* NVIC ISERx (Interrupt set-enable register) base addresses */
+
+#define NVIC_ISER0								((volatile uint32_t*)0xE000E100)
+#define NVIC_ISER1								((volatile uint32_t*)0xE000E104)
+#define NVIC_ISER2								((volatile uint32_t*)0xE000E108)
+
+
+/* NVIC ICERx (Interrupt clear-enable register) base addresses */
+
+#define NVIC_ICER0								((volatile uint32_t*)0XE000E180)
+#define NVIC_ICER1								((volatile uint32_t*)0XE000E184)
+#define NVIC_ICER2								((volatile uint32_t*)0XE000E188)
+
+
+/* NVIC IPR (Interrupt priority register) base address */
+
+#define NVIC_PR_BASEADDR						((volatile uint32_t*)0xE000E400)
+
+
+/* Number of priority bits implemented in priority register */
+
+#define NO_PR_BITS_IMPLEMENTED					4
+
+/********************************************************************************/
+
+/* MCU Peripheral Base Addresses */
+
+/********************************************************************************/
+
 /* Base addresses of Flash, SRAM and ROM memories */
 
 #define FLASH_BASEADDR							0x08000000U
@@ -323,6 +358,41 @@ typedef struct
 									(x == GPIOG) ? 6 :\
 									(x == GPIOH) ? 7 :\
 									(x == GPIOI) ? 8 :0 )
+
+
+/********************************************************************************/
+
+/* EXTI line IRQ (Interrupt request) numbers */
+
+/********************************************************************************/
+
+#define IRQ_NO_EXTI0			6
+#define IRQ_NO_EXTI1			7
+#define IRQ_NO_EXTI2			8
+#define IRQ_NO_EXTI3			9
+#define IRQ_NO_EXTI4			10
+#define IRQ_NO_EXTI9_5			23
+#define IRQ_NO_EXTI15_10		40
+
+
+/* Macros for all possible IRQ priority positions */
+
+#define NVIC_IRQ_PRI0			0
+#define NVIC_IRQ_PRI1			1
+#define NVIC_IRQ_PRI2			2
+#define NVIC_IRQ_PRI3			3
+#define NVIC_IRQ_PRI4			4
+#define NVIC_IRQ_PRI5			5
+#define NVIC_IRQ_PRI6			6
+#define NVIC_IRQ_PRI7			7
+#define NVIC_IRQ_PRI8			8
+#define NVIC_IRQ_PRI9			9
+#define NVIC_IRQ_PRI10			10
+#define NVIC_IRQ_PRI11			11
+#define NVIC_IRQ_PRI12			12
+#define NVIC_IRQ_PRI13			13
+#define NVIC_IRQ_PRI14			14
+#define NVIC_IRQ_PRI15			15
 
 
 /********************************************************************************/

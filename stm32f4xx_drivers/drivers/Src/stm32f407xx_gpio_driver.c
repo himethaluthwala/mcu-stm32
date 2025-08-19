@@ -325,7 +325,7 @@ void GPIO_WriteToOuputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber, uint8_t Valu
  * Description:				Writes a value to the specified GPIO port output register
  *
  * Parameter 1:				Base address of the GPIO peripheral
- * Parameter 3:				Value to write
+ * Parameter 2:				Value to write
  *
  * Return:					None
  *
@@ -338,19 +338,118 @@ void GPIO_WriteToOuputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value)
 	pGPIOx->IDR = Value;
 }
 
+
+/*
+ * Function name:			GPIO_ToggleOuputPin
+ *
+ * Description:				Toggles the specified GPIO output pin via the output data register
+ *
+ * Parameter 1:				Base address of the GPIO peripheral
+ * Parameter 2:				GPIO pin number
+ *
+ * Return:					None
+ *
+ * Notes:					None
+ *
+ */
+
 void GPIO_ToggleOuputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
 {
 	pGPIOx->ODR ^= (1 << PinNumber);
 }
 
 
-void GPIO_IRQConfig(uint8_t IRQNumber, uint8_t IRQPriority, uint8_t EnorDi)
-{
+/*
+ * Function name:			GPIO_IRQInterruptConfig
+ *
+ * Description:				Configures the appropriate interrupt register in the NVIC
+ *
+ * Parameter 1:				IRQ Number
+ * Parameter 2:				Enable or Disable (1 or 0)
+ *
+ * Return:					None
+ *
+ * Notes:					None
+ *
+ */
 
+void GPIO_IRQInterruptConfig(uint8_t IRQNumber, uint8_t EnorDi)
+{
+	if (EnorDi == ENABLE) {
+		if (IRQNumber <= 31) {
+			// program ISER0
+			*NVIC_ISER0 |= (1 << IRQNumber);
+
+		} else if (IRQNumber > 31 && IRQNumber < 64) {
+			// program ISER1
+			*NVIC_ISER1 |= (1 << (IRQNumber % 32));
+
+		} else if (IRQNumber >= 64 && IRQNumber < 96) {
+			// program ISER2
+			*NVIC_ISER2 |= (1 << (IRQNumber % 32));
+
+		}
+	} else {
+		if (IRQNumber <= 31) {
+			// program ICER0
+			*NVIC_ICER0 |= (1 << IRQNumber);
+
+		} else if (IRQNumber > 31 && IRQNumber < 64) {
+			// program ICER1
+			*NVIC_ICER1 |= (1 << (IRQNumber % 32));
+
+		} else if (IRQNumber >= 64 && IRQNumber < 96) {
+			// program ICER2
+			*NVIC_ICER2 |= (1 << (IRQNumber % 32));
+		}
+	}
 }
+
+
+/*
+ * Function name:			GPIO_IRQPriorityConfig
+ *
+ * Description:				Configures the priority of the interrupt through the priority register in the NVIC
+ *
+ * Parameter 1:				IRQ Number
+ * Parameter 2:				IRQ Priority
+ *
+ * Return:					None
+ *
+ * Notes:					NO_PR_BITS_IMPLEMENTED is MCU specific
+ *
+ */
+
+void GPIO_IRQPriorityConfig(uint8_t IRQNumber, uint8_t IRQPriority) {
+	// 1. find IPR register and bit to set
+	uint8_t iprx = IRQNumber / 4;
+	uint8_t iprx_section = IRQNumber % 4;
+
+	uint8_t shift_amount = (8 * iprx_section) + (8 - NO_PR_BITS_IMPLEMENTED);	// first 4 bits of each priority register are not used
+
+	*(NVIC_PR_BASEADDR + (4 * iprx)) |= (IRQPriority << shift_amount);
+}
+
+
+/*
+ * Function name:			GPIO_IRQHandling
+ *
+ * Description:				Clears the EXTI pending register if currently set
+ *
+ * Parameter 1:				GPIO pin number
+ *
+ * Return:					None
+ *
+ * Notes:					None
+ *
+ */
 
 void GPIO_IRQHandling(uint8_t PinNumber)
 {
-
+	// Clear the EXTI pending register
+	if (EXTI->PR & (1 << PinNumber)) {
+		// clear by writing 1
+		EXTI->PR |= (1 << PinNumber);
+	}
 }
 
