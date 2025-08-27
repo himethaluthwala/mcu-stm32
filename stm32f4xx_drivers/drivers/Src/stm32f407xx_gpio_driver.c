@@ -64,7 +64,6 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 		// enable EXTI interrupt delivery using IMR
 		EXTI->IMR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
 
-
 	}
 
 	temp = 0;
@@ -103,6 +102,20 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 	}
 
 }
+
+
+/*
+ * Function name:			GPIO_DeInit
+ *
+ * Description:				Deinitialises the GPIO port and pin
+ *
+ * Parameter 1:				Base address of the GPIO peripheral
+ *
+ * Return:					None
+ *
+ * Notes:					None
+ *
+ */
 
 void GPIO_DeInit(GPIO_RegDef_t *pGPIOx)
 {
@@ -425,9 +438,9 @@ void GPIO_IRQPriorityConfig(uint8_t IRQNumber, uint8_t IRQPriority) {
 	uint8_t iprx = IRQNumber / 4;
 	uint8_t iprx_section = IRQNumber % 4;
 
-	uint8_t shift_amount = (8 * iprx_section) + (8 - NO_PR_BITS_IMPLEMENTED);	// first 4 bits of each priority register are not used
+	uint32_t shift_amount = (8 * iprx_section) + (8 - NO_PR_BITS_IMPLEMENTED);	// first 4 bits of each priority register are not used
 
-	*(NVIC_PR_BASEADDR + (4 * iprx)) |= (IRQPriority << shift_amount);
+	*(NVIC_PR_BASEADDR + iprx) |= (IRQPriority << shift_amount);
 }
 
 

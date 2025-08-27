@@ -40,6 +40,7 @@
 
 #define NO_PR_BITS_IMPLEMENTED					4
 
+
 /********************************************************************************/
 
 /* MCU Peripheral Base Addresses */
@@ -93,6 +94,7 @@
 /* Base addresses of APB2 peripherals (SPI, USART, EXTI and SYSCFG only) */
 
 #define SPI1_BASEADDR							(APB2_BASEADDR + 0x3000)
+#define SPI4_BASEADDR							(APB2_BASEADDR + 0x3400)
 #define USART1_BASEADDR							(APB2_BASEADDR + 0x1000)
 #define USART6_BASEADDR							(APB2_BASEADDR + 0x1400)
 #define EXTI_BASEADDR							(APB2_BASEADDR + 0x3C00)
@@ -120,6 +122,22 @@ typedef struct
 	volatile uint32_t LCKR;						/* GPIO port configuration lock register 		Offset: 0x1C */
 	volatile uint32_t AFR[2];					/* GPIO port alternate function register	 	Offset: (low)0x20, (high)0x24 */
 } GPIO_RegDef_t;
+
+
+/* SPI */
+
+typedef struct
+{
+	volatile uint32_t CR1;						/* SPI control register 1						Offset: 0x00 */
+	volatile uint32_t CR2;						/* SPI control register 2						Offset: 0x04 */
+	volatile uint32_t SR;						/* SPI status register							Offset: 0x08 */
+	volatile uint32_t DR;						/* SPI data register						 	Offset: 0x0C */
+	volatile uint32_t CRCPR;					/* SPI CRC polynomial register					Offset: 0x10 */
+	volatile uint32_t RXCRCR;					/* SPI Rx CRC register							Offset: 0x14 */
+	volatile uint32_t TXCRCR;					/* SPI Tx CRC register							Offset: 0x18 */
+	volatile uint32_t I2SCFGR;					/* SPI I2S configuration register				Offset: 0x1C */
+	volatile uint32_t I2SPR;					/* SPI I2S prescalar register				 	Offset: 0x20 */
+} SPI_RegDef_t;
 
 
 /* Reset and Clock Control (RCC) */
@@ -184,7 +202,7 @@ typedef struct
 {
 	volatile uint32_t MEMRMP;					/* SYSCFG memory remap register							Offset: 0x00 */
 	volatile uint32_t PMC;						/* Peripheral mode configuration register				Offset: 0x04 */
-	volatile uint32_t EXTICR[4];					/* EXTI configuration register 1-4						Offset: 0x08-0x14 */
+	volatile uint32_t EXTICR[4];				/* EXTI configuration register 1-4						Offset: 0x08-0x14 */
 	volatile uint32_t RESERVED[2];				/* 														Offset: 0x18-0x1C */
 	volatile uint32_t CMPCR;					/* Compensation cell control register					Offset: 0x20 */
 }SYSCFG_RegDef_t;
@@ -208,6 +226,14 @@ typedef struct
 #define GPIOG				((GPIO_RegDef_t*) GPIOG_BASEADDR)
 #define GPIOH				((GPIO_RegDef_t*) GPIOH_BASEADDR)
 #define GPIOI				((GPIO_RegDef_t*) GPIOI_BASEADDR)
+
+
+/* SPI */
+
+#define SPI1				((SPI_RegDef_t*) SPI1_BASEADDR)
+#define SPI2				((SPI_RegDef_t*) SPI2_BASEADDR)
+#define SPI3				((SPI_RegDef_t*) SPI3_BASEADDR)
+#define SPI4				((SPI_RegDef_t*) SPI4_BASEADDR)
 
 
 /* Reset and Clock Control (RCC) */
@@ -256,6 +282,7 @@ typedef struct
 #define SPI1_PCLK_EN()		( RCC->APB2ENR |= (1 << 12) )
 #define SPI2_PCLK_EN()		( RCC->APB1ENR |= (1 << 14) )
 #define SPI3_PCLK_EN()		( RCC->APB1ENR |= (1 << 15) )
+#define SPI4_PCLK_EN()		( RCC->APB2ENR |= (1 << 13) )		// might not exist on discovery board
 
 
 /* UART */
@@ -307,6 +334,7 @@ typedef struct
 #define SPI1_PCLK_DI()		( RCC->APB2ENR &= ~(1 << 12) )
 #define SPI2_PCLK_DI()		( RCC->APB1ENR &= ~(1 << 14) )
 #define SPI3_PCLK_DI()		( RCC->APB1ENR &= ~(1 << 15) )
+#define SPI4_PCLK_DI()		( RCC->APB2ENR &= ~(1 << 13) )		// might not exist on discovery board
 
 
 /* UART */
@@ -397,6 +425,25 @@ typedef struct
 
 /********************************************************************************/
 
+/* Bit position definitions of SPI peripheral */
+
+/********************************************************************************/
+
+/* CR1 register */
+
+#define SPI_CR1_CPHA			0
+#define SPI_CR1_CPOL			1
+#define SPI_CR1_MSTR			2
+#define SPI_CR1_BR				3
+#define SPI_CR1_SSM				9
+#define SPI_CR1_RXONLY			10
+#define SPI_CR1_DFF				11
+#define SPI_CR1_BIDIMODE		15
+
+
+
+/********************************************************************************/
+
 /* Other useful macros */
 
 /********************************************************************************/
@@ -409,6 +456,8 @@ typedef struct
 
 
 #include "stm32f407xx_gpio_driver.h"
+#include "stm32f407xx_spi_driver.h"
+
 
 
 #endif /* INC_STM32F407XX_H_ */

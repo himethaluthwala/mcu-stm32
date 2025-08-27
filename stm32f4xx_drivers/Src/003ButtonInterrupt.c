@@ -13,7 +13,7 @@
 
 void delay(void)
 {
-	for (uint32_t i = 0; i < 250000; i++);	// gives ~200ms delay with system clock of 16 MHz
+	for (uint32_t i = 0; i < 250000; i++);	// gives ~200ms delay with system clock of 16MHz
 }
 
 
